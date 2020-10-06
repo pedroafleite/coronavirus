@@ -9,4 +9,4 @@ This will allowed us to visualise the coronavirus data in ways that have not bee
 1) Estimation of herd immunity
 2) Spread of Covid-19 outbreak by neightborhood.
 
-Unfortunately, the Ministry of Health gave up on disclosing data for the neightborhoods in which each case of Covid-19 occurred, which hindered the details of the spatial data.
+Unfortunately, the Ministry of Health gave up on disclosing Covid=-19 data by neightborhoods, which hindered the details of the spatial analysis.
