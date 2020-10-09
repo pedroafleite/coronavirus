@@ -17,4 +17,4 @@ Data focussed on:
 2) São José dos Campos (SP)
 3) Rio Claro (SP)
 
-Unfortunately, the Ministry of Health gave up on disclosing Covid=-19 data by neightborhoods, which hindered the details of fine-grained spatial analysis by neightborhoods.
+Unfortunately, the Ministry of Health gave up on disclosing Covid-19 data by neightborhoods, which hindered the details of fine-grained spatial analysis by neightborhoods.
