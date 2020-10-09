@@ -9,7 +9,7 @@ A few steps were required to be made prior to the data analysis and are not expl
 - Data cleaning: most of which was made using Excel to assure that both coronavirus dataset and the census dataset had the same typography, especially in what regards the cities names.
 
 This allowed us to visualise the coronavirus data in ways that have not been commonly shown by media outlets such as:
-1) Estimation of herd immunity
+1) Estimation of herd immunity (*imunidade de rebanho*).
 2) Spread of Covid-19 outbreak by neightborhood.
 
 Data focussed on:
