@@ -1,0 +1,184 @@
+---
+title: "Coronavirus in the São Paulo State: Cases, Deaths and Population"
+author: "Pedro Leite"
+date: "23/10/2020"
+output: github_document
+---
+
+```{r message=FALSE, warning=FALSE}
+library(maps)
+library(mapdata)
+library(sidrar)
+library(geobr)
+library(tmap)
+library(leaflet)
+library(ggplot2)
+library(sf)
+library(rio)
+library(vctrs)
+library(dplyr)
+  install_formats()
+library(sidrar)
+library(knitr)
+  knitr::opts_chunk$set(echo = TRUE)
+
+#Plot the data in a visually appealling way  
+library(RColorBrewer)
+library(classInt)
+library(tibble)
+  
+library(tmap) #for static and interactive maps
+library(leaflet) #for interactive maps
+
+```
+
+## Testing `geobr` package
+
+```{r}
+#Municipality of São José dos Campos
+muni <- read_municipality(code_muni=3549904, year=2019 )
+no_axis <- theme(axis.title=element_blank(),
+                 axis.text=element_blank(),
+                 axis.ticks=element_blank())
+
+ggplot() +
+  geom_sf(data=muni, fill="#2D3E50", color="#FEBF57", size=.15, show.legend = FALSE) +
+  labs(subtitle="São José dos Campos", size=8) +
+  theme_void() +
+  no_axis
+```
+
+```{r}
+#Neightboorhoods in São José dos Campos
+sp_census <- read_census_tract(code_tract="SP", year=2010)
+sjc_census <- sp_census[which(sp_census$name_muni=='São José Dos Campos'),]
+
+ggplot() +
+  geom_sf(data=sjc_census, fill="#2D3E50", color="#FEBF57", size=.15, show.legend = FALSE) +
+  labs(subtitle="São José dos Campos", size=8) +
+  theme_void() +
+  no_axis
+```
+
+```{r message=FALSE, warning=FALSE}
+sp <- read_municipality(code_muni="SP", year=2010)
+no_axis <- theme(axis.title=element_blank(),
+                 axis.text=element_blank(),
+                 axis.ticks=element_blank())
+
+ggplot(data=sp) +
+  geom_sf(aes(fill="b"), size=.15, show.legend = FALSE) +
+  labs(subtitle="São Paulo", size=8) +
+  theme_void() +
+  no_axis
+```
+
+## Maps, Coronavirus and Population
+
+```{r}
+coronadata <- read.csv2("INFLUD-07-09-2020.csv", 
+                        header = TRUE, 
+                        stringsAsFactors=TRUE, 
+                        na = "NA",
+                        dec = ".",
+                        sep=";")
+```
+
+
+```{r}
+pop <- read.csv2("estimativa_dou_2015_20150915.csv", 
+                        header = TRUE, 
+                        stringsAsFactors=TRUE, 
+                        na = "NA",
+                        dec = ".",
+                        sep=";")
+```
+
+```{r}
+levels(coronadata$SG_UF_NOT)
+```
+
+```{r}
+#New dataframe with only SP data
+spcorona <- coronadata[which(coronadata$SG_UF_NOT=='SP'),]
+
+#merge coronavirus data with sp map
+names(sp)
+names(spcorona)
+names(spcorona)[names(spcorona) == "CO_MUN_NOT"] <- "code_muni"
+sp_corona <- merge(sp, spcorona, by="code_muni", all=TRUE)
+
+```
+
+
+
+```{r}
+#Edit code_muni in sp to display only 6 digits (instead of 7)
+sp$code_muni <- as.numeric(substr(sp$code_muni, 1, 6))
+
+#How many contaminations for each city?
+contam_sp <- spcorona %>% 
+  group_by(code_muni) %>%
+  summarise(no_rows = length(code_muni))
+
+# 1. Insert it into SP state map
+sp_coronamap <- merge(sp,contam_sp, by="code_muni", all=TRUE)
+
+#2. Merge pop data with other data GOOD ONE
+sp_coronamap_pop <- merge(sp_coronamap,pop, by="name_muni", all=TRUE)
+
+```
+
+
+```{r}
+nclr <- 7
+plotclr <- brewer.pal(nclr,"Reds")
+sp_coronamap_pop[["no_rows"]][is.na(sp_coronamap_pop[["no_rows"]])] <- 0
+str(sp_coronamap_pop)
+sp_coronamap_pop[["pop"]][is.na(sp_coronamap_pop[["pop"]])] <- 0
+
+CASES <- sp_coronamap_pop$no_rows
+POP2015 <- sp_coronamap_pop$pop
+sp_coronamap_pop$var <- ((CASES/POP2015))
+class_casos <- classIntervals(sp_coronamap_pop$var, nclr, style="sd")
+colcode_casos <- findColours(class_casos, plotclr)
+
+ggplot(data=sp_coronamap_pop) +
+  geom_sf(size=.15, color=NA) + geom_sf(aes(fill=var)) +
+  scale_fill_viridis_c(direction = -1, limits = c(0, 0.015)) + #escala de cores
+  labs(subtitle="São Paulo", size=8, fill="Casos confirmados \na cada 100 hab") +
+  theme_void() +
+  no_axis
+```
+
+
+```{r}
+#How many corona deaths for each city?
+spcorona_deaths <- spcorona[spcorona$EVOLUCAO %in% c("2"),]
+
+deaths_sp <- spcorona_deaths %>% 
+  group_by(code_muni) %>%
+  summarise(deaths = length(code_muni))
+
+#Insert it in SP state map (on previous map)
+sp_coronamap <- merge(sp,deaths_sp, by="code_muni", all=TRUE)
+
+#merge pop data with other data
+sp_coronamap_pop <- merge(sp_coronamap,pop, by="name_muni", all=TRUE)
+
+sp_coronamap_pop[["deaths"]][is.na(sp_coronamap_pop[["deaths"]])] <- 0
+
+DEATHS <- sp_coronamap_pop$deaths
+POP2015 <- sp_coronamap_pop$pop
+sp_coronamap_pop$var_d <- ((DEATHS/POP2015))
+
+class_deaths <- classIntervals(sp_coronamap_pop$var_d, nclr, style="sd")
+colcode_deaths <- findColours(class_deaths, plotclr)
+
+ggplot(data=sp_coronamap_pop) +
+  geom_sf(size=.15, color=NA) + geom_sf(aes(fill=var_d)) +
+    scale_fill_viridis_c(direction = -1, limits = c(0, 0.0035)) + #escala de cores
+  labs(subtitle="São Paulo", size=8, fill="Mortes confirmdas \na cada 100 hab") +
+  theme_void() +
+  no_axis
+```  
