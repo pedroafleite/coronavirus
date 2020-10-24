@@ -1,4 +1,4 @@
-# coronavirus
+# Coronavirus in the Sâo Paulo State: Cases, Deaths and Population
 
 This project explored the still-growing cases of Covid-19 in Brazil. It allowed us to visualise the estimate how coronavirus cases are distributed according to the population of each city. While we are at the verge of municipal elections, these maps allowed us to have a sense of which cities were dealing the best with the Covids-19 pandemic.
 
