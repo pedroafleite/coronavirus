@@ -2,7 +2,7 @@
 
 This project explored the still-growing cases of Covid-19 in Brazil. It allowed us to visualise the estimate how coronavirus cases are distributed according to the population of each city. While we are at the verge of municipal elections, these maps allowed us to have a sense of which cities were dealing the best with the Covids-19 pandemic.
 
-[The complete data analysis is displayed here.]
+[The complete data analysis is displayed here](https://github.com/pedroafleite/coronavirus/blob/main/coronavirus.md).
 
 In this data analysis, we predicted that the city of Barretos was among the cities that were having the most number of cases and deaths of Covid-19. Later on, the State government disclaimed that the city was to enter a new curfew (https://bit.ly/3dV1vuV).
 
