@@ -14,4 +14,4 @@ A few steps were required to be made prior to the data analysis and are not expl
 
 Data focussed on the São Paulo State, but I also used the city of São José dos Campos to test the `geobr`package.
 
-Unfortunately, the Ministry of Health gave up on disclosing Covid-19 data by neightborhoods, which hindered the details of fine-grained spatial analysis by neightborhoods.
+Unfortunately, the Ministry of Health gave up on disclosing Covid-19 data by neightborhoods, which hindered the details of spatial analysis by neightborhoods.
